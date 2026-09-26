@@ -1,0 +1,41 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&family=Outfit:wght@600;700;800&display=swap');
+@import 'tailwindcss';
+
+@theme {
+  --color-bg: #fdf8f2;
+  --color-surface: #ffffff;
+  --color-surface-2: #fef4ea;
+  --color-border: #e8ddd0;
+  --color-border-2: #d4c4b0;
+  --color-primary: #6b4226;
+  --color-primary-light: #8b5e3c;
+  --color-primary-dim: #f0e8de;
+  --color-accent: #c9813b;
+  --color-accent-dim: #fceede;
+  --color-success: #3a7d54;
+  --color-success-dim: #e6f4ec;
+  --color-danger: #c0392b;
+  --color-danger-dim: #fdecea;
+  --color-warning: #e67e22;
+  --color-warning-dim: #fef3e2;
+  --color-text: #2c1a0e;
+  --color-text-2: #7a5c42;
+  --color-text-3: #b09070;
+  --font-body: 'Noto Sans JP', sans-serif;
+  --font-display: 'Outfit', sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  background: #fdf8f2;
+  color: #2c1a0e;
+  font-family: 'Noto Sans JP', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+button { font-family: inherit; cursor: pointer; }
+input, select, textarea { font-family: inherit; }
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #d4c4b0; border-radius: 3px; }

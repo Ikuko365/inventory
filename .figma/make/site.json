@@ -1,0 +1,10 @@
+{
+  "description": "Create stunning design comps effortlessly with this intuitive web app, perfect for designers looking to streamline their workflow and showcase ideas.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}
