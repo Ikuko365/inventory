@@ -33,7 +33,7 @@ interface HistoryEntry {
   id: number
   productId: number
   productName: string
-  type: '入荷' | '出庫'
+  type: '入荷' | '出庫' | '修正'
   quantity: number
   date: string
   employeeName: string
@@ -402,7 +402,7 @@ function HistoryPage({ history, setPage }: {
   history: HistoryEntry[]
   setPage: (p: Page) => void
 }) {
-  const [filterType, setFilterType] = useState<'全て' | '入荷' | '出庫'>('全て')
+  const [filterType, setFilterType] = useState<'全て' | '入荷' | '出庫' | '修正'>('全て')
   const [filterProduct, setFilterProduct] = useState('')
 
   const productNames = [...new Set(history.map(h => h.productName))]
@@ -416,7 +416,7 @@ function HistoryPage({ history, setPage }: {
       {/* Filters */}
       <div style={{ display: 'flex', gap: 10, marginBottom: 16, flexWrap: 'wrap' }}>
         <div style={{ display: 'flex', gap: 4 }}>
-          {(['全て', '入荷', '出庫'] as const).map(t => (
+          {(['全て', '入荷', '出庫', '修正'] as const).map(t => (
             <button key={t} onClick={() => setFilterType(t)} style={{
               padding: '6px 14px', borderRadius: 6, border: 'none', fontSize: 13,
               fontWeight: 600, cursor: 'pointer',
@@ -454,7 +454,7 @@ function HistoryPage({ history, setPage }: {
               title={h.productName}>{h.productName}</span>
             {/* quantity */}
             <span style={{ flexShrink: 0, fontSize: 14, fontWeight: 700, color: h.type === '入荷' ? '#3a7d54' : '#c0392b', minWidth: 28, textAlign: 'right' }}>
-              {h.type === '入荷' ? '+' : '-'}{h.quantity}
+              {h.type === '修正' ? (h.quantity > 0 ? '+' : '') : h.type === '入荷' ? '+' : '-'}{h.quantity}
             </span>
             {/* right meta */}
             <div style={{ flexShrink: 0, textAlign: 'right', minWidth: 72 }}>
@@ -807,7 +807,7 @@ export default function App() {
 
     // 変更前と変更後の差分を計算する（増えたら+、減ったら-）
     const diff = newValues.current - target.current
-
+    
     // ① まず history テーブルに「修正」として1行追加する
     const { error: hErr } = await supabase.from('history').insert({
       product_id: id,
