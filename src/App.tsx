@@ -14,7 +14,7 @@ type Page =
   | 'product-register'
   | 'employee-register'
   | 'edit'
-  | 'history-confirm'
+  
 
 interface Product {
   id: number
@@ -140,7 +140,7 @@ function Header({ page, setPage }: { page: Page; setPage: (p: Page) => void }) {
     'product-register': '商品登録',
     'employee-register': '従業員登録',
     edit: '登録内容の修正',
-    'history-confirm': '履歴確認',
+   
   }
   const showBack = page !== 'top'
 
@@ -398,23 +398,18 @@ function InputPage({ products, employees, addHistory, setPage }: {
 
 // ─── History Page ─────────────────────────────────────────────────────────────
 
-function HistoryPage({ history, setPage, setHistoryConfirmIds }: {
+function HistoryPage({ history, setPage }: {
   history: HistoryEntry[]
   setPage: (p: Page) => void
-  setHistoryConfirmIds: (ids: number[]) => void
 }) {
   const [filterType, setFilterType] = useState<'全て' | '入荷' | '出庫'>('全て')
   const [filterProduct, setFilterProduct] = useState('')
-  const [selected, setSelected] = useState<number[]>([])
 
   const productNames = [...new Set(history.map(h => h.productName))]
   const filtered = history
     .filter(h => filterType === '全て' || h.type === filterType)
     .filter(h => !filterProduct || h.productName === filterProduct)
     .sort((a, b) => b.date.localeCompare(a.date))
-
-  const toggleSelect = (id: number) =>
-    setSelected(s => s.includes(id) ? s.filter(x => x !== id) : [...s, id])
 
   return (
     <div style={{ padding: 20, maxWidth: 800, margin: '0 auto' }}>
@@ -437,54 +432,37 @@ function HistoryPage({ history, setPage, setHistoryConfirmIds }: {
         </select>
       </div>
 
-      {selected.length > 0 && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12, background: '#fef4ea', borderRadius: 8, padding: '10px 14px' }}>
-          <span style={{ fontSize: 13, color: '#7a5c42' }}>{selected.length}件選択中</span>
-          <button style={S.btn('secondary', 'sm')} onClick={() => { setHistoryConfirmIds(selected); setPage('history-confirm') }}>
-            選択した履歴を確認・修正
-          </button>
-          <button style={S.btn('ghost', 'sm')} onClick={() => setSelected([])}>解除</button>
-        </div>
-      )}
-
       {/* Card list — no horizontal scroll, names never wrap */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
         {filtered.length === 0 ? (
           <div style={{ ...S.card, textAlign: 'center', color: '#b09070', padding: 32 }}>該当する履歴がありません</div>
-        ) : filtered.map(h => {
-          const isSel = selected.includes(h.id)
-          return (
-            <div key={h.id} onClick={() => toggleSelect(h.id)} style={{
-              background: isSel ? '#fef4ea' : '#ffffff',
-              border: `1px solid ${isSel ? '#c9813b' : '#e8ddd0'}`,
-              borderRadius: 10, padding: '11px 14px',
-              display: 'flex', alignItems: 'center', gap: 10,
-              cursor: 'pointer', transition: 'background 0.1s, border-color 0.1s',
-            }}>
-              <input type="checkbox" checked={isSel} onChange={() => toggleSelect(h.id)}
-                onClick={e => e.stopPropagation()}
-                style={{ width: 16, height: 16, flexShrink: 0, cursor: 'pointer', accentColor: '#6b4226' }} />
-              {/* type badge */}
-              <span style={{
-                flexShrink: 0, padding: '3px 8px', borderRadius: 12, fontSize: 11, fontWeight: 700, whiteSpace: 'nowrap',
-                background: h.type === '入荷' ? '#e6f4ec' : '#fdecea',
-                color: h.type === '入荷' ? '#3a7d54' : '#c0392b',
-              }}>{h.type}</span>
-              {/* product name — truncate */}
-              <span style={{ flex: 1, fontSize: 13, fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0 }}
-                title={h.productName}>{h.productName}</span>
-              {/* quantity */}
-              <span style={{ flexShrink: 0, fontSize: 14, fontWeight: 700, color: h.type === '入荷' ? '#3a7d54' : '#c0392b', minWidth: 28, textAlign: 'right' }}>
-                {h.type === '入荷' ? '+' : '-'}{h.quantity}
-              </span>
-              {/* right meta */}
-              <div style={{ flexShrink: 0, textAlign: 'right', minWidth: 72 }}>
-                <div style={{ fontSize: 11, color: '#7a5c42' }}>{h.date}</div>
-                <div style={{ fontSize: 11, color: '#b09070', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 72 }}>{h.employeeName}</div>
-              </div>
+        ) : filtered.map(h => (
+          <div key={h.id} style={{
+            background: '#ffffff',
+            border: '1px solid #e8ddd0',
+            borderRadius: 10, padding: '11px 14px',
+            display: 'flex', alignItems: 'center', gap: 10,
+          }}>
+            {/* type badge */}
+            <span style={{
+              flexShrink: 0, padding: '3px 8px', borderRadius: 12, fontSize: 11, fontWeight: 700, whiteSpace: 'nowrap',
+              background: h.type === '入荷' ? '#e6f4ec' : '#fdecea',
+              color: h.type === '入荷' ? '#3a7d54' : '#c0392b',
+            }}>{h.type}</span>
+            {/* product name — truncate */}
+            <span style={{ flex: 1, fontSize: 13, fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0 }}
+              title={h.productName}>{h.productName}</span>
+            {/* quantity */}
+            <span style={{ flexShrink: 0, fontSize: 14, fontWeight: 700, color: h.type === '入荷' ? '#3a7d54' : '#c0392b', minWidth: 28, textAlign: 'right' }}>
+              {h.type === '入荷' ? '+' : '-'}{h.quantity}
+            </span>
+            {/* right meta */}
+            <div style={{ flexShrink: 0, textAlign: 'right', minWidth: 72 }}>
+              <div style={{ fontSize: 11, color: '#7a5c42' }}>{h.date}</div>
+              <div style={{ fontSize: 11, color: '#b09070', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 72 }}>{h.employeeName}</div>
             </div>
-          )
-        })}
+          </div>
+        ))}
       </div>
     </div>
   )
@@ -709,62 +687,6 @@ function EditPage({
 
 // ─── History Confirm Page ─────────────────────────────────────────────────────
 
-function HistoryConfirmPage({ history, confirmIds, setPage }: {
-  history: HistoryEntry[]
-  confirmIds: number[]
-  setPage: (p: Page) => void
-}) {
-  const entries = history.filter(h => confirmIds.includes(h.id))
-  const [executed, setExecuted] = useState(false)
-
-  if (executed) {
-    return (
-      <div style={{ padding: 20, maxWidth: 480, margin: '0 auto', textAlign: 'center', paddingTop: 60 }}>
-        <div style={{ fontSize: 48, marginBottom: 16 }}>✅</div>
-        <h2 style={{ fontSize: 20, fontWeight: 700, marginBottom: 8 }}>実行完了</h2>
-        <p style={{ color: '#7a5c42', fontSize: 14, marginBottom: 24 }}>{entries.length}件の履歴を確定しました</p>
-        <button style={S.btn('primary')} onClick={() => setPage('history')}>履歴一覧へ戻る</button>
-      </div>
-    )
-  }
-
-  return (
-    <div style={{ padding: 20, maxWidth: 600, margin: '0 auto' }}>
-      <div style={S.card}>
-        <h3 style={{ fontSize: 14, fontWeight: 700, marginBottom: 4 }}>確認対象の履歴</h3>
-        <p style={{ fontSize: 12, color: '#7a5c42', marginBottom: 16 }}>以下の内容で確定します。確認してください。</p>
-        <div style={{ overflowX: 'auto', marginBottom: 20 }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
-            <thead>
-              <tr style={{ borderBottom: '2px solid #e8ddd0' }}>
-                {['品名', '区分', '数量', '日付', '担当者'].map(h => (
-                  <th key={h} style={{ padding: '8px 10px', textAlign: 'left', color: '#7a5c42', fontWeight: 600 }}>{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {entries.map(h => (
-                <tr key={h.id} style={{ borderBottom: '1px solid #f0e8de' }}>
-                  <td style={{ padding: '10px 10px', fontWeight: 500 }}>{h.productName}</td>
-                  <td style={{ padding: '10px 10px' }}>
-                    <span style={{ padding: '2px 8px', borderRadius: 12, fontSize: 12, fontWeight: 700, background: h.type === '入荷' ? '#e6f4ec' : '#fdecea', color: h.type === '入荷' ? '#3a7d54' : '#c0392b' }}>{h.type}</span>
-                  </td>
-                  <td style={{ padding: '10px 10px', fontWeight: 700 }}>{h.quantity}</td>
-                  <td style={{ padding: '10px 10px', color: '#7a5c42' }}>{h.date}</td>
-                  <td style={{ padding: '10px 10px' }}>{h.employeeName}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        <div style={{ display: 'flex', gap: 10 }}>
-          <button style={{ ...S.btn('primary'), flex: 1, padding: '12px' }} onClick={() => setExecuted(true)}>実行する</button>
-          <button style={S.btn('ghost')} onClick={() => setPage('history')}>戻る</button>
-        </div>
-      </div>
-    </div>
-  )
-}
 
 // ─── Bottom Nav ───────────────────────────────────────────────────────────────
 
@@ -807,7 +729,7 @@ export default function App() {
   const [history, setHistory] = useState<HistoryEntry[]>([])
   const [loading, setLoading] = useState(true)
   const [editTargetId, setEditTargetId] = useState<number | null>(null)
-  const [historyConfirmIds, setHistoryConfirmIds] = useState<number[]>([])
+
 
   // Supabaseから全データを読み込む
   const loadAll = async () => {
@@ -842,7 +764,7 @@ export default function App() {
     const newCurrent = e.type === '入荷'
       ? target.current + e.quantity
       : Math.max(0, target.current - e.quantity)
-
+  
     const { error: hErr } = await supabase.from('history').insert({
       product_id: e.productId,
       product_name: e.productName,
@@ -961,9 +883,9 @@ export default function App() {
         <HistoryPage
           history={history}
           setPage={setPage}
-          setHistoryConfirmIds={setHistoryConfirmIds}
-        />
-      )}
+  />
+)}
+      
       {page === 'admin' && <AdminPage setPage={setPage} />}
       {page === 'product-register' && (
         <ProductRegisterPage
@@ -987,13 +909,7 @@ export default function App() {
           correctStock={correctStock}
         />
       )}
-      {page === 'history-confirm' && (
-        <HistoryConfirmPage
-          history={history}
-          confirmIds={historyConfirmIds}
-          setPage={setPage}
-        />
-      )}
+      
     </>
   )}
 </main>
